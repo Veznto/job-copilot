@@ -1,0 +1,273 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Co-Pilot — Job Application Intelligence</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- AUTH SCREEN -->
+  <div id="auth-screen" class="screen">
+    <div class="auth-container">
+      <div class="auth-brand">
+        <img src="assets/logo.svg" alt="Co-Pilot" class="brand-logo" />
+        <h1>Co-Pilot</h1>
+        <p>Your AI-powered job application intelligence layer</p>
+      </div>
+      
+      <div class="auth-tabs">
+        <button class="tab-btn active" onclick="switchTab('login')">Sign In</button>
+        <button class="tab-btn" onclick="switchTab('register')">Create Account</button>
+      </div>
+
+      <div id="login-form" class="auth-form">
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="login-email" placeholder="you@example.com" />
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="login-password" placeholder="••••••••" />
+        </div>
+        <button class="btn-primary" onclick="login()">Sign In →</button>
+        <p id="login-error" class="error-msg"></p>
+      </div>
+
+      <div id="register-form" class="auth-form hidden">
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="reg-email" placeholder="you@example.com" />
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="reg-password" placeholder="At least 8 characters" />
+        </div>
+        <button class="btn-primary" onclick="register()">Create Account →</button>
+        <p id="reg-error" class="error-msg"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="app-screen" class="screen hidden">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="assets/logo.svg" alt="Co-Pilot" class="brand-logo small" />
+        <span class="brand-name">Co-Pilot</span>
+      </div>
+      
+      <button class="btn-new-app" onclick="showNewApplication()">
+        + New Application
+      </button>
+
+      <div class="sidebar-section-label">Your Applications</div>
+      <div id="roles-list" class="roles-list">
+        <div class="empty-state-sidebar">No applications yet.<br>Create your first one!</div>
+      </div>
+
+      <div class="sidebar-footer">
+        <span id="user-email-display"></span>
+        <button class="btn-signout" onclick="signOut()">Sign out</button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      
+      <!-- Welcome / Empty State -->
+      <div id="welcome-view" class="view">
+        <div class="welcome-container">
+          <img src="assets/logo.svg" alt="Co-Pilot" class="welcome-logo" />
+          <h2>Ready to land your next role?</h2>
+          <p>Upload your resume and paste a job description. Co-Pilot runs 4 AI agents and hands you back a complete application kit in under 60 seconds.</p>
+          <div class="welcome-features">
+            <div class="feature-card">
+              <img src="assets/icon-fit.svg" alt="" class="feature-icon" />
+              <strong>Fit Analysis</strong>
+              <span>Know exactly where you stand</span>
+            </div>
+            <div class="feature-card">
+              <img src="assets/icon-resume.svg" alt="" class="feature-icon" />
+              <strong>Resume Rewrite</strong>
+              <span>Tailored bullets + keywords</span>
+            </div>
+            <div class="feature-card">
+              <img src="assets/icon-cover.svg" alt="" class="feature-icon" />
+              <strong>Cover Letter</strong>
+              <span>Human-sounding, not template</span>
+            </div>
+            <div class="feature-card">
+              <img src="assets/icon-interview.svg" alt="" class="feature-icon" />
+              <strong>Interview Prep</strong>
+              <span>10 Q&As from your resume</span>
+            </div>
+          </div>
+          <button class="btn-primary large" onclick="showNewApplication()">Start Your First Application →</button>
+        </div>
+      </div>
+
+      <!-- New Application Form -->
+      <div id="new-app-view" class="view hidden">
+        <div class="view-header">
+          <h2>New Application</h2>
+          <p>Fill in the details and we'll generate your full application kit.</p>
+        </div>
+        
+        <div class="form-grid">
+          <div class="field">
+            <label>Job Title</label>
+            <input type="text" id="job-title" placeholder="e.g. Senior Product Manager" />
+          </div>
+          <div class="field">
+            <label>Company</label>
+            <input type="text" id="company" placeholder="e.g. Stripe" />
+          </div>
+          <div class="field full-width">
+            <label>Job Description</label>
+            <textarea id="jd-text" placeholder="Paste the full job description here..." rows="10"></textarea>
+          </div>
+          <div class="field full-width">
+            <label>Your Resume (PDF)</label>
+            <div class="file-drop-zone" id="drop-zone" onclick="document.getElementById('resume-file').click()">
+              <input type="file" id="resume-file" accept=".pdf" style="display:none" onchange="handleFileSelect(this)" />
+              <div class="drop-zone-content">
+                <img src="assets/icon-upload.svg" alt="" class="drop-icon" />
+                <span id="file-label">Click to upload your resume PDF</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" onclick="showWelcome()">Cancel</button>
+          <button type="button" class="btn-primary" id="run-btn" onclick="runPipeline()">
+            Run AI Pipeline →
+          </button>
+        </div>
+        <p id="form-error" class="error-msg"></p>
+      </div>
+
+      <!-- Loading View -->
+      <div id="loading-view" class="view hidden">
+        <div class="loading-container">
+          <div class="agent-pipeline">
+            <img src="assets/logo.svg" alt="" class="loading-logo" />
+            <div class="pipeline-title">Running your AI agents...</div>
+            <p id="loading-status" class="loading-status">Preparing your application...</p>
+            <div class="agents-track">
+              <div class="agent-step" id="step-1" data-agent="fit_analysis">
+                <div class="agent-icon-wrap">
+                  <img src="assets/icon-fit.svg" alt="" class="agent-icon" />
+                  <div class="agent-dot"></div>
+                </div>
+                <span>Fit Analysis</span>
+              </div>
+              <div class="pipeline-connector"></div>
+              <div class="agent-step" id="step-2" data-agent="resume_rewrite">
+                <div class="agent-icon-wrap">
+                  <img src="assets/icon-resume.svg" alt="" class="agent-icon" />
+                  <div class="agent-dot"></div>
+                </div>
+                <span>Resume Rewrite</span>
+              </div>
+              <div class="pipeline-connector"></div>
+              <div class="agent-step" id="step-3" data-agent="cover_letter">
+                <div class="agent-icon-wrap">
+                  <img src="assets/icon-cover.svg" alt="" class="agent-icon" />
+                  <div class="agent-dot"></div>
+                </div>
+                <span>Cover Letter</span>
+              </div>
+              <div class="pipeline-connector"></div>
+              <div class="agent-step" id="step-4" data-agent="interview_qa">
+                <div class="agent-icon-wrap">
+                  <img src="assets/icon-interview.svg" alt="" class="agent-icon" />
+                  <div class="agent-dot"></div>
+                </div>
+                <span>Interview Q&A</span>
+              </div>
+            </div>
+            <div class="loading-spinner"></div>
+            <p class="loading-note">This usually takes 30–60 seconds. Please keep this tab open.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results View -->
+      <div id="results-view" class="view hidden">
+        <div class="results-header">
+          <div class="results-title-row">
+            <div>
+              <h2 id="results-title">Software Engineer at Google</h2>
+              <div class="status-row">
+                <select id="status-select" onchange="updateStatus()">
+                  <option value="applied">Applied</option>
+                  <option value="interviewing">Interviewing</option>
+                  <option value="offer">Got Offer</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn-secondary" onclick="deleteApplication()">Delete</button>
+          </div>
+        </div>
+
+        <div class="tabs-nav">
+          <button class="result-tab active" onclick="showResultTab('fit')"><img src="assets/icon-fit.svg" alt="" class="tab-icon" /> Fit Analysis</button>
+          <button class="result-tab" onclick="showResultTab('resume')"><img src="assets/icon-resume.svg" alt="" class="tab-icon" /> Resume</button>
+          <button class="result-tab" onclick="showResultTab('cover')"><img src="assets/icon-cover.svg" alt="" class="tab-icon" /> Cover Letter</button>
+          <button class="result-tab" onclick="showResultTab('interview')"><img src="assets/icon-interview.svg" alt="" class="tab-icon" /> Interview Prep</button>
+        </div>
+
+        <div id="fit-panel" class="result-panel">
+          <div class="panel-header">
+            <h3>Fit Analysis</h3>
+            <button class="btn-copy" onclick="copyContent('fit-content')">Copy</button>
+          </div>
+          <div id="fit-content" class="result-text"></div>
+        </div>
+
+        <div id="resume-panel" class="result-panel hidden">
+          <div class="panel-header">
+            <h3>Rewritten Resume</h3>
+            <button class="btn-copy" onclick="copyContent('resume-content')">Copy</button>
+          </div>
+          <div class="diff-toggle">
+            <button class="diff-btn active" onclick="showDiff('rewritten')">Rewritten</button>
+            <button class="diff-btn" onclick="showDiff('original')">Original</button>
+          </div>
+          <div id="resume-content" class="result-text"></div>
+          <div id="original-content" class="result-text hidden"></div>
+        </div>
+
+        <div id="cover-panel" class="result-panel hidden">
+          <div class="panel-header">
+            <h3>Cover Letter</h3>
+            <button class="btn-copy" onclick="copyContent('cover-content')">Copy</button>
+          </div>
+          <div id="cover-content" class="result-text"></div>
+        </div>
+
+        <div id="interview-panel" class="result-panel hidden">
+          <div class="panel-header">
+            <h3>Interview Q&A Pack</h3>
+            <button class="btn-copy" onclick="copyContent('interview-content')">Copy</button>
+          </div>
+          <div id="interview-content" class="result-text"></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

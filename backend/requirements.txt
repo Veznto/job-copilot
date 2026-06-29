@@ -1,0 +1,26 @@
+# Job Co-Pilot — Python dependencies
+# Install from the backend folder:
+#   pip install -r requirements.txt
+# Requires Python 3.11+
+
+# Web API & server (FastAPI, CORS, static frontend, SSE streaming)
+fastapi==0.138.1
+uvicorn[standard]==0.49.0
+python-multipart==0.0.32
+
+# Database (SQLite via SQLAlchemy)
+sqlalchemy==2.0.51
+
+# Auth (JWT login + password hashing)
+python-jose[cryptography]==3.5.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
+
+# AI agents (Groq LLM API)
+groq==1.5.0
+
+# Resume PDF text extraction (imported as `fitz`)
+pymupdf==1.27.2.3
+
+# Load GROQ_API_KEY, SECRET_KEY, etc. from .env
+python-dotenv==1.2.2
