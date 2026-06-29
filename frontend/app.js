@@ -2,15 +2,13 @@
 
 
 function getApiBase() {
-  if (window.location.protocol === "file:") {
+  // If running locally via file explorer or a dev port that isn't 8000
+  if (window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" || window.location.protocol === "file:") {
     return "http://127.0.0.1:8000";
   }
-  if (window.location.port === "8000") {
-    return window.location.origin;
-  }
-  return "http://127.0.0.1:8000";
+  // When live on Render, point directly to the site's own origin URL
+  return window.location.origin;
 }
-
 const API = getApiBase();
 const PIPELINE_KEY = "copilot_pipeline";
 let token = localStorage.getItem("copilot_token");
