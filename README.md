@@ -5,7 +5,6 @@
 ![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.138-009688?style=flat&logo=fastapi&logoColor=white)
 ![Groq](https://img.shields.io/badge/Groq-LLM-orange?style=flat)
-![License](https://img.shields.io/badge/License-MIT-blue?style=flat)
 
 Co-Pilot is an AI-powered job application assistant. Upload your resume, paste a job description, and four specialized AI agents generate a complete application kit — fit analysis, tailored resume rewrite, cover letter, and interview prep — in under 60 seconds.
 
